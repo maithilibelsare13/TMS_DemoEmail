@@ -6,8 +6,11 @@ const generateOTP = () => {
         specialChars : false
     });
 
-
     return OTP;
 }
 
-module.exports = generateOTP();
+
+
+module.exports = {
+    generateOTP
+};
