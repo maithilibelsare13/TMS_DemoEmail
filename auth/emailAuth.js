@@ -4,8 +4,8 @@ const express=require('express');
 const app = express();
 const nodemailer = require('nodemailer');
 app.use(bodyParser.json());
-//const expressAsyncHandler = require("express-async-handler");
-const { generateOTP } = require("./otpAuth");
+
+const OTPGenerator = require("otp-generator");
 
 
 
@@ -61,13 +61,13 @@ function verifyOTP (req, res) {
   const { email, otp } = req.body;
 
   // Retrieve OTP from the database
-  const selectQuery = `SELECT otp FROM tms_otp WHERE email = ? AND time_stamp >= NOW() - INTERVAL 5 MINUTE`;
+  const selectQuery = `SELECT otp FROM tms_otp WHERE email = ? AND time_stamp >= NOW() - INTERVAL 5 MINUTE ORDER BY time_stamp desc LIMIT 1`;
   const deleteQuery = `DELETE FROM tms_otp WHERE email = ?`;
   const values = [email];
 
-  if(!otp){
-    return res.status(400).json({message : "No Email Provided"})
-  }
+  // if(!otp){
+  //   return res.status(400).json({message : "No Email Provided"})
+  // }
   db.query(selectQuery, values, (error, result) => {
     if(error){
       console.log(error)
@@ -89,7 +89,21 @@ function verifyOTP (req, res) {
 };
 
 
+
+function generateOTP () {
+  const OTP = OTPGenerator.generate(4, {
+      upperCaseAlphabets : true ,
+      specialChars : false
+  });
+
+  return OTP;
+}
+
+
+
+
 module.exports = {
   SendEmail,
   verifyOTP,
+  generateOTP,
 };
