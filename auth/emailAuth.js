@@ -4,7 +4,7 @@ const express=require('express');
 const app = express();
 const nodemailer = require('nodemailer');
 app.use(bodyParser.json());
-const expressAsyncHandler = require("express-async-handler");
+//const expressAsyncHandler = require("express-async-handler");
 const { generateOTP } = require("./otpAuth");
 
 
@@ -18,15 +18,19 @@ const transporter = nodemailer.createTransport({
 });
 
 
-const SendEmail = expressAsyncHandler(async (req, res) => {
+function SendEmail(req, res) {
   const { email } = req.body;
   console.log(email);
 
   const OTP = generateOTP();
 
-  // Store OTP in the database
+
   const insertQuery = `INSERT INTO tms_otp (email, otp, time_stamp) VALUES (?, ?, NOW())`;
   const values = [email, OTP];
+
+  if(!email){
+    return res.status(400).json({message : "No Email Provided"})
+  }
   db.query(insertQuery, values, (error, result) =>{
     if(error){
       console.log(error)
@@ -50,9 +54,9 @@ const SendEmail = expressAsyncHandler(async (req, res) => {
         }
     });
   });
-});
+};
 
-const verifyOTP = expressAsyncHandler(async (req, res) =>{
+function verifyOTP (req, res) {
   const { email, otp } = req.body;
 
   // Retrieve OTP from the database
@@ -77,7 +81,7 @@ const verifyOTP = expressAsyncHandler(async (req, res) =>{
         res.status(400).json({message : 'Invalid OTP'});
     }
   });
-});
+};
 
 
 module.exports = {

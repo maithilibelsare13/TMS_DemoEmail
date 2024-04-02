@@ -1,6 +1,6 @@
 const OTPGenerator = require("otp-generator");
 
-const generateOTP = () => {
+function generateOTP () {
     const OTP = OTPGenerator.generate(4, {
         upperCaseAlphabets : true ,
         specialChars : false
