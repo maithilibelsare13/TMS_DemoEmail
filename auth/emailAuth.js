@@ -24,7 +24,6 @@ function SendEmail(req, res) {
 
   const OTP = generateOTP();
 
-
   const insertQuery = `INSERT INTO tms_otp (email, otp, time_stamp) VALUES (?, ?, NOW())`;
   const values = [email, OTP];
 
@@ -56,6 +55,8 @@ function SendEmail(req, res) {
   });
 };
 
+
+
 function verifyOTP (req, res) {
   const { email, otp } = req.body;
 
@@ -63,6 +64,10 @@ function verifyOTP (req, res) {
   const selectQuery = `SELECT otp FROM tms_otp WHERE email = ? AND time_stamp >= NOW() - INTERVAL 5 MINUTE`;
   const deleteQuery = `DELETE FROM tms_otp WHERE email = ?`;
   const values = [email];
+
+  if(!otp){
+    return res.status(400).json({message : "No Email Provided"})
+  }
   db.query(selectQuery, values, (error, result) => {
     if(error){
       console.log(error)
