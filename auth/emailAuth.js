@@ -56,7 +56,7 @@ const verifyOTP = expressAsyncHandler(async (req, res) =>{
   const { email, otp } = req.body;
 
   // Retrieve OTP from the database
-  const selectQuery = `SELECT otp FROM tms_otp WHERE email = ? AND time_stamp >= NOW() - INTERVAL 1 MINUTE`;
+  const selectQuery = `SELECT otp FROM tms_otp WHERE email = ? AND time_stamp >= NOW() - INTERVAL 5 MINUTE`;
   const deleteQuery = `DELETE FROM tms_otp WHERE email = ?`;
   const values = [email];
   db.query(selectQuery, values, (error, result) => {
